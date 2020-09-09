@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import CritRoll from "./CritRoll";
+import CritFail from "./CritFail";
 
 const Roll = (props) => {
   const { amount, sides, modifier, rolls } = props;
@@ -7,9 +9,34 @@ const Roll = (props) => {
     return roll + modifier;
   };
 
+
   const determineDisplay = () => {
     // const rolls = [];
-    let stringBlock = amount + "d" + sides + ": ";
+    return rolls.map((roll, i) => {
+      // if this is the last roll, don't add a space
+      if (i === rolls.length - 1) {
+        if (roll === 20) {
+          console.log(roll)
+          return <CritRoll roll={roll}/>
+        } else if (roll === 1 && sides == 20) {
+          return <CritFail roll={roll}/>;
+        } else {
+          return roll;
+        }
+        // else add a space
+      } else {
+        if (roll === 20) {
+          console.log(roll)
+          return <><CritRoll roll={roll}/> + </>
+        } else if (roll == 1 && sides == 20) {
+          return <><CritFail roll={roll}/> + </>;
+        } else {
+          return roll + " + ";
+        }
+      }
+    } 
+    )
+    
 
     // {
     //   if (rolls.length > 1) {
@@ -95,31 +122,10 @@ const Roll = (props) => {
     // }
   };
   const total = rolls.reduce((a, b) => a + b);
+  const stringBlock = amount + "d" + sides + ": ";
   return (
     <div>
-      <div>
-        {rolls.map((roll, i) => {
-          // if this is the last roll, don't add a space
-          if (i === rolls.length - 1) {
-            if (roll === 20) {
-              return <><span style={{ color: "green" }}>{roll}</span></>;
-            } else if (roll === 1) {
-              return <><span style={{ color: "red" }}>{roll}</span></>;
-            } else {
-              return roll;
-            }
-            // else add a space
-          } else {
-            if (roll == 20) {
-              return <span style={{ color: "green" }}>{roll}</span> + " + ";
-            } else if (roll == 1) {
-              return <span style={{ color: "red" }}>{roll}</span> + " + ";
-            } else {
-              return roll + " + ";
-            }
-          }
-        })} = {total}
-      </div>
+      {stringBlock} {determineDisplay()} {modifier > 0 ? <> + {modifier} = {total + modifier}</> : null}
     </div>
   );
 };
